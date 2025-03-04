@@ -1,0 +1,135 @@
+:: StoryTitle
+Untitled Story
+
+
+:: StoryData
+{
+  "ifid": "F779EBCD-7ACE-4AA4-AC42-6DBA7C90A6F9",
+  "format": "Harlowe",
+  "format-version": "3.3.9",
+  "start": "Start",
+  "zoom": 1
+}
+
+
+:: AskDay {"position":"750,675","size":"100,100"}
+"Еще одна длинная смена," — вздыхает он. "Ничего интересного здесь никогда не происходит. Приглядевшись, он говорит: "Ты напоминаешь мне кого-то... из моего детства.(if: $hostile)[ Такой же наглый и тупой.]"
+(set: $childhoodFriend to true)
+(set: $talked to true)
+
+[[Назад->TalkToGuard]]
+
+
+:: DodgeLeft {"position":"1325,625","size":"100,100"}
+Пуля едва не задевает вас, но попадает в охранника. Он спотыкается, но подгоняет вас вперед.
+(set: $guardAlive to false)
+
+[[Бежать дальше->FinalEscape]]
+[[Провернуть подвеску->Start]]
+
+
+:: DodgeRight {"position":"1325,775","size":"100,100"}
+Вы резко уходите вправо и пуля попадает прямо в вас.
+
+[[Провернуть подвеску->Start]]
+
+
+:: EscapeSequence {"position":"975,700","size":"100,100"}
+Пули свистят в воздухе, пока вы двое несетесь по коридору.
+
+[[Увернуться влево->DodgeLeft]]
+[[Увернуться вправо->DodgeRight]]
+
+
+:: FinalEscape {"position":"1500,700","size":"100,100"}
+Вы выбрались.
+
+
+:: Init {"position":"25,675","size":"100,100"}
+(set: $childhoodFriend to false)
+(set: $guardAlive to true)
+(set: $playerHit to false)
+(set: $timeWheel to false)
+
+(set: $hostile to false)
+(set: $talked to false)
+(set: $escaped to false)
+
+[[Начать->Start]]
+
+
+:: InsultGuard {"position":"750,550","size":"100,100"}
+"Следи за языком, заключенный!" — резко отвечает он, крепче сжимая дубинку.
+(set: $hostile to true)
+
+[[Назад->TalkToGuard]]
+
+
+:: Start {"position":"250,675","size":"100,100"}
+(if:visits is 1)[
+(set: $childhoodFriend to false)
+(set: $guardAlive to true)
+(set: $escaped to false)
+(set: $hostile to false)
+(set: $talked to false)
+Вы просыпаетесь в маленькой тускло освещенной тюремной камере.]
+(if:visits > 1)[
+(if:$escaped is not true)
+[Вы проварачиваете механизм, и ... ничего не происходит. ]
+(if:$escaped is true) [
+Вы проварачиваете механизм, и мир вокруг вас размывается. Когда все приходит в норму, вокруг вас чернота. Тогда вы решаетсь открыть глаза.
+(set: $escaped to false)]]
+(set: $guardAlive to true)
+(set: $hostile to false)
+(set: $talked to false)
+Снаружи стоит охранник, безразлично наблюдая за вами. При вас старинная золотой подвеска с часами, которую вы стащили вместе с деньгами.
+
+Что вы будете делать?
+
+[[Провернуться к охраннику->TalkToGuard]]
+[[Провернуть подвеску->Start]]
+
+
+:: TalkToGuard {"position":"425,675","size":"100,100"}
+(if: $hostile)[Охранник смотрит на вас настороженно. Ваше прежнее поведение сделало его более подозрительным.]
+
+"Чего тебе?" — спрашивает охранник, скрестив руки на груди.
+
+Что вы будете делать?
+
+(if: $childhoodFriend)[
+[[Притвориться другом детства]]]
+[[Провернуть подвеску->Start]]
+[[Спросить, как проходит его день->AskDay]]
+[[Оскорбить его->InsultGuard]]
+[[Пригрозить ему->ThreatenGuard]]
+
+
+:: ThreatenGuard {"position":"750,800","size":"100,100"}
+"Лучше будь осторожен," — угрожающе говорите вы.
+
+"Сильные слова для того, кто сидит за решеткой," — ухмыляется он, не впечатленный.
+(set: $hostile to true)
+
+[[Назад->TalkToGuard]]
+
+
+:: Притвориться другом детства {"position":"750,925","size":"100,100"}
+Вы пристально смотрите охраннику в глаза. "Это я. Твой друг детства. Помнишь?"
+
+(if:$talked is true)["Да ладно!"
+[[Назад->TalkToGuard]] ]
+(if:$talked is false)
+[
+(if:$hostile is true)[
+"Ну и что?"
+[[Назад->TalkToGuard]] ]
+(if:$hostile is false)
+[
+Его глаза расширяются. "Это... это не может быть..." Он внимательно изучает вас, пытаясь найти подтверждение.
+
+Спустя мгновение он вздыхает и открывает камеру. "Если ты говоришь правду... тогда давай выберемся отсюда. Вместе."
+(set: $escaped to true)
+[[Бегство->EscapeSequence]] ]
+]
+
